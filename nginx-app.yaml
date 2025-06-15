@@ -1,20 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-nginx-app # A name for your Argo CD Application
-  namespace: argocd   # Argo CD Applications live in the argocd namespace
+  name: my-nginx-app
+  namespace: argocd
 spec:
-  project: default    # Which Argo CD project this application belongs to (default is fine)
+  project: default
   source:
-    repoURL: https://charts.bitnami.com/bitnami # The Helm repository URL (where the chart is)
-    targetRevision: 20.0.7                      # The specific version of the Nginx chart to use
-    chart: nginx                                # The name of the chart within that repository
+    # --- HERE ARE THE CHANGES ---
+    repoURL: https://github.com/3bd01987/argocd-helm-nginx # Your Git repository URL
+    targetRevision: master # Or 'master', 'main', 'v1.0.0', etc.
+    path: my-nginx-chart # The relative path *inside your Git repo* to your Helm chart directory
+    # --- END OF CHANGES ---
+
+    # Remove the 'chart' field when using a Git repo 'path'
+    # chart: nginx # <-- THIS LINE SHOULD BE REMOVED
   destination:
-    server: https://kubernetes.default.svc      # The Kubernetes API server URL (this is the default for in-cluster deployments)
-    namespace: default                          # The Kubernetes namespace where Nginx will be deployed
+    server: https://kubernetes.default.svc
+    namespace: default
   syncPolicy:
     automated:
-      prune: true                               # Allows Argo CD to delete resources that no longer exist in Git
-      selfHeal: true                            # Argo CD will automatically fix discrepancies
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true                    # Automatically create the destination namespace if it doesn't exist
+      - CreateNamespace=true
