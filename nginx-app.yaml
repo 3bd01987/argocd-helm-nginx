@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-nginx-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # --- HERE ARE THE CHANGES ---
+    repoURL: https://github.com/3bd01987/argocd-helm-nginx # Your Git repository URL
+    targetRevision: master # Or 'master', 'main', 'v1.0.0', etc.
+    path: my-nginx-chart # The relative path *inside your Git repo* to your Helm chart directory
+    # --- END OF CHANGES ---
+
+    # Remove the 'chart' field when using a Git repo 'path'
+    # chart: nginx # <-- THIS LINE SHOULD BE REMOVED
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
